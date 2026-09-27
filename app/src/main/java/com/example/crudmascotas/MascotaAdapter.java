@@ -10,129 +10,64 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.function.Consumer;
 
-public class MascotaAdapter
-        extends RecyclerView.Adapter<MascotaAdapter.MascotaViewHolder> {
+public class MascotaAdapter extends RecyclerView.Adapter<MascotaAdapter.MascotaViewHolder> {
 
-    private List<Mascota> listaMascotas;
-    private OnMascotaClickListener listener;
-
-    public interface OnMascotaClickListener {
-
-        void onEditarClick(Mascota mascota);
-
-        void onEliminarClick(Mascota mascota);
-    }
+    private List<Mascota> mascotas;
+    private Consumer<Mascota> editar, eliminar;
 
     public MascotaAdapter(
-            List<Mascota> listaMascotas,
-            OnMascotaClickListener listener
+            List<Mascota> mascotas,
+            Consumer<Mascota> editar,
+            Consumer<Mascota> eliminar
     ) {
-        this.listaMascotas = listaMascotas;
-        this.listener = listener;
+        this.mascotas = mascotas;
+        this.editar = editar;
+        this.eliminar = eliminar;
     }
 
     @NonNull
     @Override
-    public MascotaViewHolder onCreateViewHolder(
-            @NonNull ViewGroup parent,
-            int viewType
-    ) {
-
-        View view = LayoutInflater
-                .from(parent.getContext())
-                .inflate(
-                        R.layout.item_mascota,
-                        parent,
-                        false
-                );
+    public MascotaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_mascota, parent, false);
 
         return new MascotaViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(
-            @NonNull MascotaViewHolder holder,
-            int position
-    ) {
+    public void onBindViewHolder(@NonNull MascotaViewHolder holder, int position) {
+        Mascota mascota = mascotas.get(position);
 
-        Mascota mascota = listaMascotas.get(position);
+        holder.tvNombre.setText(mascota.getNombre());
+        holder.tvRaza.setText("Raza: " + mascota.getRaza());
+        holder.tvEdad.setText("Edad: " + mascota.getEdad());
+        holder.tvColor.setText("Color: " + mascota.getColor());
 
-        holder.tvNombre.setText(
-                mascota.getNombre()
-        );
-
-        holder.tvRaza.setText(
-                "Raza: " + mascota.getRaza()
-        );
-
-        holder.tvEdad.setText(
-                "Edad: " + mascota.getEdad() + " años"
-        );
-
-        holder.tvColor.setText(
-                "Color: " + mascota.getColor()
-        );
-
-        holder.btnEditar.setOnClickListener(v -> {
-            listener.onEditarClick(mascota);
-        });
-
-        holder.btnEliminar.setOnClickListener(v -> {
-            listener.onEliminarClick(mascota);
-        });
+        holder.btnEditar.setOnClickListener(v -> editar.accept(mascota));
+        holder.btnEliminar.setOnClickListener(v -> eliminar.accept(mascota));
     }
 
     @Override
     public int getItemCount() {
-        return listaMascotas.size();
+        return mascotas.size();
     }
 
-    public static class MascotaViewHolder
-            extends RecyclerView.ViewHolder {
+    public static class MascotaViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvNombre;
-        TextView tvRaza;
-        TextView tvEdad;
-        TextView tvColor;
+        TextView tvNombre, tvRaza, tvEdad, tvColor;
+        Button btnEditar, btnEliminar;
 
-        Button btnEditar;
-        Button btnEliminar;
-
-        public MascotaViewHolder(
-                @NonNull View itemView
-        ) {
+        public MascotaViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            tvNombre =
-                    itemView.findViewById(
-                            R.id.tvNombre
-                    );
-
-            tvRaza =
-                    itemView.findViewById(
-                            R.id.tvRaza
-                    );
-
-            tvEdad =
-                    itemView.findViewById(
-                            R.id.tvEdad
-                    );
-
-            tvColor =
-                    itemView.findViewById(
-                            R.id.tvColor
-                    );
-
-            btnEditar =
-                    itemView.findViewById(
-                            R.id.btnEditar
-                    );
-
-            btnEliminar =
-                    itemView.findViewById(
-                            R.id.btnEliminar
-                    );
+            tvNombre = itemView.findViewById(R.id.tvNombre);
+            tvRaza = itemView.findViewById(R.id.tvRaza);
+            tvEdad = itemView.findViewById(R.id.tvEdad);
+            tvColor = itemView.findViewById(R.id.tvColor);
+            btnEditar = itemView.findViewById(R.id.btnEditar);
+            btnEliminar = itemView.findViewById(R.id.btnEliminar);
         }
     }
 }
